@@ -24,7 +24,9 @@ from flask import Flask, request, render_template, g, redirect, Response, sessio
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
-app.config['SQLALCHEMY_ECHO'] = True
+
+# set the secret key.  keep this really secret:
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 #
 # The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
@@ -66,7 +68,7 @@ def before_request():
 
   The variable g is globally accessible.
   """
-  if not ('username' in session or request.endpoint == "login"):
+  if ('uid' not in session) and (request.endpoint != "login") and (request.endpoint != "userLogin"):
     return redirect('/login')
   try:
     g.conn = engine.connect()
@@ -177,24 +179,23 @@ def another():
 @app.route('/add', methods=['POST'])
 def add():
   name = request.form['name']
-  g.conn.execute("INSERT INTO test(name) VALUES ("+str(name)+")")
+  g.conn.execute("INSERT INTO test(name) VALUES (%s)", name)
   return redirect('/')
 
 
 @app.route('/login')
 def login():
     return render_template("login.html")
-
+    
 @app.route('/userLogin', methods=['POST'])
 def userLogin():
     username = request.form['username']
     password = request.form['password']
-    cursor = g.conn.execute("SELECT * FROM Userss WHERE username = " + "\'"+str(username) + "\'" + "and password = " + "\'" + str(password) + "\'")
-    if len(cursor) > 0:
-        session['username'] = username
-        redirect('/')
-    else:
-        redirect('/login')
+    result = g.conn.execute("SELECT * FROM users WHERE username = %s and password = %s", (username, password))
+    for row in result:
+      session['uid'] = row['uid']
+      return redirect('/')
+    return redirect('/login')
 
 if __name__ == "__main__":
 
