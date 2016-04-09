@@ -1,5 +1,6 @@
 from book_db_access import *
 from user_db_access import *
+from order_db_access import *
 from sqlalchemy import *
 
 
@@ -19,8 +20,25 @@ bda = BookDBAccess(conn)
 # print bda.get_books_from_wishlist(2)
 # print bda.get_book_tags(16)
 # print bda.get_books_by_tag_id(1)
-print bda.get_books_in_shoppingcart(1)
+# print bda.get_books_in_shoppingcart(1)
 
 uda = UserDBAccess(conn)
 # print uda.get_followers(1)
 # print uda.get_followings(1)
+
+oda = OrderDBAccess(conn)
+# print oda.insert_book_to_shoppingcart(6, 1, 3)
+# print oda.insert_book_to_shoppingcart(9, 1, 5)
+# print oda.insert_book_to_shoppingcart(8, 1, 2)
+# print oda.remove_book_from_shoppingcart(6, 1)
+
+# create an order
+# books = [
+#     {'bid': 17, 'quantity': 2},
+#     {'bid': 18, 'quantity': 1},
+#     {'bid': 8, 'quantity': 3}
+# ]
+# oda.create_order(7, 'Oslo somewhere', '48867735', 'Yue', 'Cen', books)
+
+# get an order
+print oda.get_order(30)

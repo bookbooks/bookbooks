@@ -87,17 +87,3 @@ class BookDBAccess:
         cursor.close()
 
         return books
-
-    def get_books_in_shoppingcart(self, user_id):
-        books = []
-        cursor = self.conn.execute('select sc.* from shoppingcarts sc where sc.uid=%s and sc.status=true', (user_id, ))
-        for row in cursor:
-            bid = row['bid']
-            quantity = row['quantity']
-            book = self.get_book(bid)
-            book['quantity'] = quantity
-            books.append(book)
-        cursor.close()
-
-        return books
-
