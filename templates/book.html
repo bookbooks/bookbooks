@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="book-container">
+        <div class="cover">
+            {{book['cover']}}
+        </div>
+        <div class="name">
+            {{book['name']}}
+        </div>
+        <div class="author">
+            {{book['author']}}
+        </div>
+        <div class="publisher">
+            {{book['publisher']}}
+        </div>
+        <div class="published-year">
+            {{book['publisheryear']}}
+        </div>
+        <div class="isbn">
+            {{book['isbn']}}
+        </div>
+        <div class="description">
+            {{book['description']}}
+        </div>
+        <div class="price">
+            {{book['price']}}
+        </div>
+        <div class="genre">
+            {{book['genre_name']}}
+        </div>
+    </div>
+
+    <div class="review-container">
+        {% for review in reviews %}
+        <div class="review">
+            <div class="user">
+                <div class="firstname">{{review['firstname']}}</div>
+                <div class="lastname">{{review['lastname']}}</div>
+                <div class="username">{{review['username']}}</div>
+            </div>
+            <div class="review-date">
+                {{review['reviewdate']}}
+            </div>
+            <div class="contents">
+                {{review['contents']}}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

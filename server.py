@@ -17,9 +17,8 @@ Read about it online.
 import os
 import click
 from sqlalchemy import *
-from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, session
-
+from book_db_access import *
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -193,9 +192,42 @@ def userLogin():
     password = request.form['password']
     result = g.conn.execute("SELECT * FROM users WHERE username = %s and password = %s", (username, password))
     for row in result:
-      session['uid'] = row['uid']
-      return redirect('/')
+        session['uid'] = row['uid']
+        session['username'] = row['username']
+        session['firstname'] = row['firstname']
+        session['lastname'] = row['lastname']
+        session['email'] = row['email']
+        return redirect('/')
+
     return redirect('/login')
+
+@app.route('/books/<genre_id>')
+def list_books(genre_id):
+    bda = BookDBAccess(g.conn)
+    books = bda.get_books_by_genre(genre_id)
+
+    context = dict(data=books)
+
+    return render_template("books.html", **context)
+
+@app.route('/book/<book_id>')
+def display_book(book_id):
+    book = {}
+    reviews = []
+
+    bda = BookDBAccess(g.conn)
+    book = bda.get_book(book_id)
+    reviews = bda.get_review_by_book_id(book_id)
+
+    context = dict(book=book, reviews=reviews)
+
+    return render_template("book.html", **context)
+
+@app.route('/user/<user_id>')
+def display_user(user_id):
+    followings = []
+    followers = []
+
 
 if __name__ == "__main__":
 

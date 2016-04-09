@@ -1,0 +1,21 @@
+<html>
+<head>
+
+</head>
+
+
+<body>
+    <div class="books-container">
+        {% for book in data %}
+        <div class="book">
+            <div class="cover"></div>
+            <div class="name">
+                <a href="/book/{{book['bid']}}">{{book['name']}}</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+
+</html>
