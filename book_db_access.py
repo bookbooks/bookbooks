@@ -11,15 +11,16 @@ class BookDBAccess:
 
         return dict(book)
 
-    def get_books_by_genre(self, genre_id):
+    def get_books_by_genre(self, genre_id, order='b.name'):
         books = []
+        segment = ' order by ' + order
         if int(genre_id) > 0:  # not all
-            cursor = self.conn.execute('select b.* from books b, book_genre bg, genres g where b.bid=bg.bid and bg.gid=g.gid and g.gid=%s', (genre_id,))
+            cursor = self.conn.execute('select b.* from books b, book_genre bg, genres g where b.bid=bg.bid and bg.gid=g.gid and g.gid=%s' + segment, (genre_id, ))
             for row in cursor:
                 books.append(row)
             cursor.close()
         else:
-            cursor = self.conn.execute('select b.*, g.name as genre_name from books b, book_genre bg, genres g where b.bid=bg.bid and bg.gid=g.gid')
+            cursor = self.conn.execute('select b.*, g.name as genre_name from books b, book_genre bg, genres g where b.bid=bg.bid and bg.gid=g.gid'  + segment)
             for row in cursor:
                 books.append(row)
             cursor.close()
@@ -87,3 +88,22 @@ class BookDBAccess:
         cursor.close()
 
         return books
+
+    def get_genres(self):
+        genres = []
+        cursor = self.conn.execute('select * from genres order by name')
+        for row in cursor:
+            genre = dict(row)
+            genres.append(genre)
+        cursor.close()
+
+        return genres
+
+    def get_genre(self, genre_id):
+        genre = {}
+        cursor = self.conn.execute('select * from genres where gid=%s', genre_id)
+        for row in cursor:
+            genre = row
+        cursor.close()
+
+        return dict(genre)

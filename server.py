@@ -206,7 +206,11 @@ def list_books(genre_id):
     bda = BookDBAccess(g.conn)
     books = bda.get_books_by_genre(genre_id)
 
-    context = dict(data=books)
+    genre = {'name': 'All books'}
+    if int(genre_id) > 0:
+        genre = bda.get_genre(genre_id)
+
+    context = dict(data=books, genre=genre)
 
     return render_template("books.html", **context)
 
@@ -227,6 +231,19 @@ def display_book(book_id):
 def display_user(user_id):
     followings = []
     followers = []
+
+def list_genres():
+    bda = BookDBAccess(g.conn)
+    genres = bda.get_genres()
+    genres.insert(0,
+        {
+            'gid': 0,
+            'name': 'All books'
+        }
+    )
+
+    return genres
+app.jinja_env.globals.update(list_genres=list_genres)
 
 
 if __name__ == "__main__":

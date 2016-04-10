@@ -4,26 +4,32 @@
     {{ super() }}
     <link href="{{ url_for('static', filename='css/books.css') }}" rel="stylesheet">
 {% endblock %}
+{% block page %}
+    <span>{{genre['name']}}</span>
+{% endblock %}
 {% block content %}
-
-        {% for book in data %}
-        {% if loop.index % 4 == 0%}
-        <div class="row book-row">
-        {% endif %}
-        <div class="book col-xs-6 col-sm-3">
-            <div class="cover">
-                <a href="/book/{{book['bid']}}">
-                    {% if book['cover'] %}
-                    <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{book['cover']}}" />
-                    {% else %}
-                    <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{ url_for('static', filename='img/no-cover-image.jpg') }}" />
-                    {% endif %}
-                </a>
+        {% if data | length > 0 %}
+            {% for book in data %}
+            {% if loop.index % 4 == 0%}
+            <div class="row book-row">
+            {% endif %}
+            <div class="book col-xs-6 col-sm-3">
+                <div class="cover">
+                    <a href="/book/{{book['bid']}}">
+                        {% if book['cover'] %}
+                        <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{book['cover']}}" />
+                        {% else %}
+                        <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{ url_for('static', filename='img/no-cover-image.jpg') }}" />
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="title"><a href="/book/{{book['bid']}}">{{book['name']}}</a></div>
             </div>
-            <div class="title"><a href="/book/{{book['bid']}}">{{book['name']}}</a></div>
-        </div>
-        {% if loop.index % 4 == 0%}
-        </div>
+            {% if loop.index % 4 == 0%}
+            </div>
+            {% endif %}
+            {% endfor %}
+        {% else %}
+            <div>Currently there is no book under this genre.</div>
         {% endif %}
-        {% endfor %}
 {% endblock %}
