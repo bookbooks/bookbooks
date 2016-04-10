@@ -1,0 +1,13 @@
+.book {
+  margin-bottom: 50px;
+}
+
+.title {
+  /*text-align: center;*/
+  margin-top: 10px;
+}
+
+.cover-img {
+  width: 200px;
+  height: 200px;
+}

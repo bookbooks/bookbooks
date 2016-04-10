@@ -1,13 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Book{% endblock %}
+{% block content %}
     <div class="book-container">
         <div class="cover">
-            {{book['cover']}}
+            <a href="/book/{{book['bid']}}">
+                {% if book['cover'] %}
+                <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{book['cover']}}" />
+                {% else %}
+                <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{ url_for('static', filename='img/no-cover-image.jpg') }}" />
+                {% endif %}
+            </a>
         </div>
         <div class="name">
             {{book['name']}}
@@ -52,5 +54,4 @@
         </div>
         {% endfor %}
     </div>
-</body>
-</html>
+{% endblock %}

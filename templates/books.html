@@ -1,21 +1,29 @@
-<html>
-<head>
+{% extends "base.html" %}
+{% block title %}Books{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/books.css') }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
 
-</head>
-
-
-<body>
-    <div class="books-container">
         {% for book in data %}
-        <div class="book">
-            <div class="cover"></div>
-            <div class="name">
-                <a href="/book/{{book['bid']}}">{{book['name']}}</a>
+        {% if loop.index % 4 == 0%}
+        <div class="row book-row">
+        {% endif %}
+        <div class="book col-xs-6 col-sm-3">
+            <div class="cover">
+                <a href="/book/{{book['bid']}}">
+                    {% if book['cover'] %}
+                    <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{book['cover']}}" />
+                    {% else %}
+                    <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{ url_for('static', filename='img/no-cover-image.jpg') }}" />
+                    {% endif %}
+                </a>
             </div>
+            <div class="title"><a href="/book/{{book['bid']}}">{{book['name']}}</a></div>
         </div>
+        {% if loop.index % 4 == 0%}
+        </div>
+        {% endif %}
         {% endfor %}
-    </div>
-</body>
-
-
-</html>
+{% endblock %}
