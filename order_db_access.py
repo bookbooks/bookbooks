@@ -7,6 +7,7 @@ class OrderDBAccess:
     def get_books_in_shoppingcart(self, user_id):
         bda = BookDBAccess(self.conn)
         books = []
+        total_price = 0.00
         cursor = self.conn.execute('select sc.* from shoppingcarts sc where sc.uid=%s and sc.status=true', (user_id, ))
         for row in cursor:
             bid = row['bid']
@@ -14,9 +15,10 @@ class OrderDBAccess:
             book = bda.get_book(bid)
             book['quantity'] = quantity
             books.append(book)
+            total_price += int(quantity) * float(book['price'])
         cursor.close()
 
-        return books
+        return books, total_price
 
     def remove_book_from_shoppingcart(self, book_id, user_id):
         self.conn.execute('update shoppingcarts set status=false where bid=%s and uid=%s', (book_id, user_id))
@@ -45,6 +47,9 @@ class OrderDBAccess:
 
     def update_quantity_for_book_in_shoppingcart(self, book_id, user_id, quantity):
         self.conn.execute('update shoppingcarts set quantity=%s where bid=%s and uid=%s', (quantity, book_id, user_id))
+
+    def empty_shoppingcart(self, user_id):
+        self.conn.execute('update shoppingcarts set status=false where uid=%s', user_id)
 
     def create_order(self, user_id, address, mobile, firstname, lastname, books):
         rslt_id = self.conn.execute("""insert into orders (orderdate, address, buyer, mobile, firstname, lastname)

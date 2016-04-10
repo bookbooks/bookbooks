@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Books{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/shoppingcart.css') }}" rel="stylesheet">
+{% endblock %}
+{% block page %}
+    <span>Shopping cart</span>
+{% endblock %}
+{% block content %}
+    {% if books | length > 0 %}
+    <div class="shoppingcart-container">
+        <div class="header">
+            There are {{books | length}} items in your shopping carts.
+        </div>
+        {% for book in books %}
+        <div class="book-row">
+            <div class="cover">
+                <a href="/book/{{book['bid']}}">
+                    {% if book['cover'] %}
+                    <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{book['cover']}}" />
+                    {% else %}
+                    <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{ url_for('static', filename='img/no-cover-image.jpg') }}" />
+                    {% endif %}
+                </a>
+            </div>
+            <div class="title"><a href="/book/{{book['bid']}}">{{book['name']}}</a></div>
+            <div class="unit-price">${{book['price']}}/per item</div>
+            <div class="quantity">
+                <form action="/scProcess" method="post">
+                    <!--<input name="quantity" type="text" class="form-control" value="{{book['quantity']}}"/>-->
+                    <input type="hidden" name="bid" value="{{book['bid']}}"/>
+                    <input type="hidden" name="method" value="updateQuantity"/>
+                    <select name="quantity" onchange="this.form.submit()">
+                        {% for n in range(1, 100) %}
+                        {% if n == book['quantity'] %}
+                        <option selected value="{{n}}">{{n}}</option>
+                        {% else %}
+                        <option value="{{n}}">{{n}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            <div class="total-price">${{book['quantity'] * book['price']}}</div>
+            <div class="remove">
+                <form action="/scProcess" method="post">
+                    <input type="hidden" name="bid" value="{{book['bid']}}"/>
+                    <input type="hidden" name="method" value="remove"/>
+                    <button type="button" class="btn btn-default" onclick="this.form.submit()">Remove</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="order">
+            <div><span>Total: </span><span class="total-price-text">${{total_price}}</span></div>
+            <div class="place-order">
+                <button type="button" class="btn btn-primary" onclick="location.href='/orderForm';">Place order</button>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div>Currently there is no item in the shopping cart.</div>
+    {% endif %}
+{% endblock %}

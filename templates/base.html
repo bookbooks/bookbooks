@@ -39,13 +39,19 @@
                     <form class="navbar-form navbar-right">
                         <input type="text" class="form-control" placeholder="Search...">
                     </form>
+                    {% if session and 'uid' in session %}
                     <ul class="nav navbar-nav navbar-right">
-                        {{ nav_link('/books/0', 'Books') }}
+                        {{ nav_link('/shoppingcart', 'Shoppingcart') }}
                         {{ nav_link('/profile', 'Profile') }}
                         {{ nav_link('/settings', 'Settings') }}
                         {{ nav_link('/orders', 'Orders') }}
                         {{ nav_link('/logout', 'Logout') }}
                     </ul>
+                    {% else %}
+                    <ul class="nav navbar-nav navbar-right">
+                        {{ nav_link('/login', 'Login') }}
+                    </ul>
+                    {% endif %}
                 </div>
             </div>
         </nav>

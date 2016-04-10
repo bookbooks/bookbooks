@@ -19,6 +19,8 @@ import click
 from sqlalchemy import *
 from flask import Flask, request, render_template, g, redirect, Response, session
 from book_db_access import *
+from user_db_access import *
+from order_db_access import *
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -67,8 +69,8 @@ def before_request():
 
   The variable g is globally accessible.
   """
-  if ('uid' not in session) and (request.endpoint != "login") and (request.endpoint != "userLogin"):
-    return redirect('/login')
+  # if ('uid' not in session) and (request.endpoint != "login") and (request.endpoint != "userLogin"):
+  #   return redirect('/login')
   try:
     g.conn = engine.connect()
   except:
@@ -103,84 +105,7 @@ def teardown_request(exception):
 #
 @app.route('/')
 def index():
-  """
-  request is a special object that Flask provides to access web request information:
-
-  request.method:   "GET" or "POST"
-  request.form:     if the browser submitted a form, this contains the data in the form
-  request.args:     dictionary of URL arguments, e.g., {a:1, b:2} for http://localhost?a=1&b=2
-
-  See its API: http://flask.pocoo.org/docs/0.10/api/#incoming-request-data
-  """
-
-  # DEBUG: this is debugging code to see what request looks like
-  print request.args
-
-
-  #
-  # example of a database query
-  #
-  cursor = g.conn.execute("SELECT name FROM test")
-  names = []
-  for result in cursor:
-    names.append(result['name'])  # can also be accessed using result[0]
-  cursor.close()
-
-  #
-  # Flask uses Jinja templates, which is an extension to HTML where you can
-  # pass data to a template and dynamically generate HTML based on the data
-  # (you can think of it as simple PHP)
-  # documentation: https://realpython.com/blog/python/primer-on-jinja-templating/
-  #
-  # You can see an example template in templates/index.html
-  #
-  # context are the variables that are passed to the template.
-  # for example, "data" key in the context variable defined below will be 
-  # accessible as a variable in index.html:
-  #
-  #     # will print: [u'grace hopper', u'alan turing', u'ada lovelace']
-  #     <div>{{data}}</div>
-  #     
-  #     # creates a <div> tag for each element in data
-  #     # will print: 
-  #     #
-  #     #   <div>grace hopper</div>
-  #     #   <div>alan turing</div>
-  #     #   <div>ada lovelace</div>
-  #     #
-  #     {% for n in data %}
-  #     <div>{{n}}</div>
-  #     {% endfor %}
-  #
-  context = dict(data = names)
-
-
-  #
-  # render_template looks in the templates/ folder for files.
-  # for example, the below file reads template/index.html
-  #
-  return render_template("index.html", **context)
-
-#
-# This is an example of a different path.  You can see it at:
-# 
-#     localhost:8111/another
-#
-# Notice that the function name is another() rather than index()
-# The functions for each app.route need to have different names
-#
-@app.route('/another')
-def another():
-  return render_template("another.html")
-
-
-# Example of adding new data to the database
-@app.route('/add', methods=['POST'])
-def add():
-  name = request.form['name']
-  g.conn.execute("INSERT INTO test(name) VALUES (%s)", name)
-  return redirect('/')
-
+  return render_template("index.html")
 
 @app.route('/login')
 def login():
@@ -232,6 +157,78 @@ def display_user(user_id):
     followings = []
     followers = []
 
+@app.route('/shoppingcart')
+def display_shoppingcart():
+    if session and 'uid' in session:
+        user_id = session['uid']
+        oda = OrderDBAccess(g.conn)
+        books, total_price = oda.get_books_in_shoppingcart(user_id)
+
+        context = dict(books=books, total_price=total_price)
+
+        return render_template("shoppingcart.html", **context)
+    else:
+        return redirect('/login')
+
+@app.route('/scProcess', methods=['POST'])
+def shoppingcart_process():
+    if session and 'uid' in session:
+        user_id = session['uid']
+        bid = request.form['bid']
+        method = request.form['method']
+        oda = OrderDBAccess(g.conn)
+        if method == 'remove':
+            oda.remove_book_from_shoppingcart(bid, user_id)
+        elif method == 'updateQuantity':
+            quantity = request.form['quantity']
+            oda.update_quantity_for_book_in_shoppingcart(bid, user_id, quantity)
+
+        return redirect('/shoppingcart')
+    else:
+        return redirect('/login')
+
+@app.route('/orderForm')
+def order_form():
+    if session and 'uid' in session:
+        user_id = session['uid']
+        oda = OrderDBAccess(g.conn)
+        books, total_price = oda.get_books_in_shoppingcart(user_id)
+
+        context = dict(books=books, total_price=total_price)
+
+        return render_template("order_form.html", **context)
+    else:
+        return redirect('/login')
+
+@app.route('/orderProcess', methods=['POST'])
+def order_process():
+    if session and 'uid' in session:
+        user_id = session['uid']
+        oda = OrderDBAccess(g.conn)
+        books, total_price = oda.get_books_in_shoppingcart(user_id)
+
+        firstname = request.form['firstname']
+        lastname = request.form['lastname']
+        mobile = request.form['mobile']
+        address = request.form['address']
+        apt = request.form['apt']
+        city = request.form['city']
+        postcode = request.form['postcode']
+        state = request.form['state']
+        country = request.form['country']
+
+        address = address + ', Apt ' + apt + '\n'+ city + ', ' + state + ' ' + postcode + '\n' + country
+
+        oda.create_order(user_id, address, mobile, firstname, lastname, books)
+
+        # after the order is created, the shopping cart should be empty
+        oda.empty_shoppingcart(user_id)
+
+        return redirect('/orders')
+    else:
+        return redirect('/login')
+
+# method for rendering the sidebar
 def list_genres():
     bda = BookDBAccess(g.conn)
     genres = bda.get_genres()
