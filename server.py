@@ -228,6 +228,19 @@ def order_process():
     else:
         return redirect('/login')
 
+@app.route('/orders')
+def list_orders():
+    if session and 'uid' in session:
+        user_id = session['uid']
+        oda = OrderDBAccess(g.conn)
+        orders = oda.get_orders(user_id)
+
+        context = dict(orders=orders)
+
+        return render_template("orders.html", **context)
+    else:
+        return redirect('/login')
+
 # method for rendering the sidebar
 def list_genres():
     bda = BookDBAccess(g.conn)

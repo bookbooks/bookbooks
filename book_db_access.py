@@ -20,7 +20,7 @@ class BookDBAccess:
                 books.append(row)
             cursor.close()
         else:
-            cursor = self.conn.execute('select b.*, g.name as genre_name from books b, book_genre bg, genres g where b.bid=bg.bid and bg.gid=g.gid'  + segment)
+            cursor = self.conn.execute('select distinct(b.*) from books b, book_genre bg, genres g where b.bid=bg.bid and bg.gid=g.gid'  + segment)
             for row in cursor:
                 books.append(row)
             cursor.close()

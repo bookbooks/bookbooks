@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Orders{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/order_form.css') }}" rel="stylesheet">
+{% endblock %}
+{% block page %}
+    <span>Your orders</span>
+{% endblock %}
+{% block content %}
+    {% if orders | length > 0 %}
+    <div class="order-list-container">
+        <div class="order-list-header">
+            You have {{orders | length}} order(s) in total.
+        </div>
+        {% for order in orders %}
+        <div class="shoppingcart-container">
+            <div class="shoppingcart-header">
+                <div><b>Order reference number</b>: {{order['oid']}}</div>
+                <div><b>Ordered on</b> {{order['orderdate']}}</div>
+            </div>
+            {% for book in order['books'] %}
+            <div class="book-row">
+                <div class="cover">
+                    <a href="/book/{{book['bid']}}">
+                        {% if book['cover'] %}
+                        <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{book['cover']}}" />
+                        {% else %}
+                        <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{ url_for('static', filename='img/no-cover-image.jpg') }}" />
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="title"><a href="/book/{{book['bid']}}">{{book['name']}}</a></div>
+                <div class="unit-price">${{book['price']}}/per item</div>
+                <div class="quantity">{{book['quantity']}}</div>
+                <div class="total-price">${{book['quantity'] * book['price']}}</div>
+            </div>
+            {% endfor %}
+            <div class="order">
+                <div><span>Total: </span><span class="total-price-text">${{order['total_price']}}</span></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div>You have not placed any order.</div>
+    {% endif %}
+{% endblock %}

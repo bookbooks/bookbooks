@@ -1,4 +1,5 @@
 from book_db_access import *
+import datetime
 
 class OrderDBAccess:
     def __init__(self, conn):
@@ -69,15 +70,19 @@ class OrderDBAccess:
         order = {}
         cursor = self.conn.execute("""select * from orders where oid=%s""", order_id)
         for row in cursor:
-            books = self.__get_orderlines(order_id)
+            books, total_price = self.__get_orderlines(order_id)
             order = dict(row)
             order['books'] = books
+            order['total_price'] = total_price
+            orderdate = order['orderdate'].strftime('%b %d, %Y')
+            order['orderdate'] = orderdate
         cursor.close()
 
         return order
 
     def __get_orderlines(self, order_id):
         books = []
+        total_price = 0.00
         bda = BookDBAccess(self.conn)
         cursor = self.conn.execute('select * from order_book where oid=%s', (order_id, ))
         for row in cursor:
@@ -85,6 +90,18 @@ class OrderDBAccess:
             book = bda.get_book(bid)
             book['quantity'] = row['quantity']
             books.append(book)
+            total_price += int(row['quantity']) * float(book['price'])
         cursor.close()
 
-        return books
+        return books, total_price
+
+    def get_orders(self, user_id):
+        orders = []
+        cursor = self.conn.execute('select * from orders where buyer=%s order by orderdate desc', (user_id, ))
+        for row in cursor:
+            oid = row['oid']
+            order = self.get_order(oid)
+            orders.append(order)
+        cursor.close()
+
+        return orders
