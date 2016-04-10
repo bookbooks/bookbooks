@@ -40,10 +40,11 @@
                         <input type="text" class="form-control" placeholder="Search...">
                     </form>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="/books/0">Books</a></li>
-                        <li><a href="#">Settings</a></li>
-                        <li><a href="#">Profile</a></li>
-                        <li><a href="#">Orders</a></li>
+                        {{ nav_link('/books/0', 'Books') }}
+                        {{ nav_link('/profile', 'Profile') }}
+                        {{ nav_link('/settings', 'Settings') }}
+                        {{ nav_link('/orders', 'Orders') }}
+                        {{ nav_link('/logout', 'Logout') }}
                     </ul>
                 </div>
             </div>
