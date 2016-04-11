@@ -41,15 +41,15 @@
                     </form>
                     {% if session and 'uid' in session %}
                     <ul class="nav navbar-nav navbar-right">
-                        {{ nav_link('/shoppingcart', 'Shoppingcart') }}
-                        {{ nav_link('/profile', 'Profile') }}
-                        {{ nav_link('/settings', 'Settings') }}
-                        {{ nav_link('/orders', 'Orders') }}
-                        {{ nav_link('/logout', 'Logout') }}
+                        {{ nav_link('/shoppingcart', 'Shoppingcart', 'fa-shopping-cart') }}
+                        {{ nav_link('/profile', 'Profile', 'fa-user') }}
+                        {{ nav_link('/settings', 'Settings', 'fa-wrench') }}
+                        {{ nav_link('/orders', 'Orders', 'fa-usd') }}
+                        {{ nav_link('/logout', 'Logout', 'fa-sign-out') }}
                     </ul>
                     {% else %}
                     <ul class="nav navbar-nav navbar-right">
-                        {{ nav_link('/login', 'Login') }}
+                        {{ nav_link('/login', 'Login', 'fa-sign-in') }}
                     </ul>
                     {% endif %}
                 </div>

@@ -1,7 +1,23 @@
-{% macro nav_link(endpoint, name) %}
+{% macro nav_link(endpoint, name, awesome_font) %}
 {% if request.url.endswith(endpoint) %}
-  <li class="active"><a href="{{ endpoint }}">{{name}}</a></li>
+    <li class="active">
+        <a href="{{ endpoint }}" title="{{name}}">
+            {% if awesome_font %}
+            <i class="fa {{awesome_font}} fa-lg"></i>
+            {% else %}
+            {{name}}
+            {% endif %}
+        </a>
+    </li>
 {% else %}
-  <li><a href="{{ endpoint }}">{{name}}</a></li>
+    <li>
+        <a href="{{ endpoint }}" title="{{name}}">
+            {% if awesome_font %}
+            <i class="fa {{awesome_font}} fa-lg"></i>
+            {% else %}
+            {{name}}
+            {% endif %}
+        </a>
+    </li>
 {% endif %}
 {% endmacro %}
