@@ -14,10 +14,13 @@ class OrderDBAccess:
             bid = row['bid']
             quantity = row['quantity']
             book = bda.get_book(bid)
-            if not book['deleted']:  # if a book has been deleted, it should be removed from the shopping cart
+            if not book['deleted']:
                 book['quantity'] = quantity
                 books.append(book)
                 total_price += int(quantity) * float(book['price'])
+            else:  # if a book has been deleted, it should be removed from the shopping cart
+                if book['status']:
+                    self.remove_book_from_shoppingcart(bid, user_id)
         cursor.close()
 
         return books, total_price
@@ -30,7 +33,7 @@ class OrderDBAccess:
         cursor = self.conn.execute('select count(*) as size from shoppingcarts where bid=%s and uid=%s', (book_id, user_id))
         for row in cursor:
             count = row['size']
-            if count > 0:
+            if count > 0:  # if the book is in the shoppingcart table
                 existed = True
                 result = self.conn.execute('select * from shoppingcarts where bid=%s and uid=%s', (book_id, user_id))
                 for r in result:
