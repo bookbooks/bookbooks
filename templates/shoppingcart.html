@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Books{% endblock %}
+{% block title %}Shopping cart{% endblock %}
 {% block head %}
     {{ super() }}
     <link href="{{ url_for('static', filename='css/shoppingcart.css') }}" rel="stylesheet">
@@ -47,7 +47,7 @@
                 <form action="/scProcess" method="post">
                     <input type="hidden" name="bid" value="{{book['bid']}}"/>
                     <input type="hidden" name="method" value="remove"/>
-                    <button type="button" class="btn btn-default" onclick="this.form.submit()">Remove</button>
+                    <button type="button" class="btn btn-danger btn-xs" onclick="this.form.submit()">Remove</button>
                 </form>
             </div>
         </div>

@@ -9,7 +9,7 @@ class OrderDBAccess:
         bda = BookDBAccess(self.conn)
         books = []
         total_price = 0.00
-        cursor = self.conn.execute('select sc.* from shoppingcarts sc where sc.uid=%s and sc.status=true', (user_id, ))
+        cursor = self.conn.execute('select sc.* from shoppingcarts sc where sc.uid=%s and sc.status=true order by sc.bid', (user_id, ))
         for row in cursor:
             bid = row['bid']
             quantity = row['quantity']
