@@ -152,10 +152,63 @@ def display_book(book_id):
 
     return render_template("book.html", **context)
 
-@app.route('/user/<user_id>')
+@app.route('/profile/<user_id>')
 def display_user(user_id):
     followings = []
     followers = []
+
+@app.route('/profile')
+def profile():
+    if session and 'uid' in session:
+        user_id = session['uid']
+        uda = UserDBAccess(g.conn)
+        bda = BookDBAccess(g.conn)
+
+        user = uda.get_user(user_id)
+        followings = uda.get_followings(user_id)
+        followers = uda.get_followers(user_id)
+        reading_list = bda.get_reading_list(user_id, 'reading')
+        read_list = bda.get_reading_list(user_id, 'read')
+        wishlists = bda.get_wishlists(user_id)
+
+        context = dict(user=user, followings=followings, followers=followers, reading_list=reading_list, read_list=read_list, wishlists=wishlists)
+
+        return render_template("profile.html", **context)
+    else:
+        return redirect('/login')
+
+@app.route('/wlProcess', methods=['POST'])
+def wishlist_process():
+    if session and 'uid' in session:
+        user_id = session['uid']
+        bda = BookDBAccess(g.conn)
+        method = request.form['method']
+
+        if method == 'add_wishlist':
+            name = request.form['name']
+            bda.add_wishlist(user_id, name)
+
+            return redirect('/profile')
+    else:
+        return redirect('/login')
+
+@app.route('/addWishlist')
+def add_wishlist():
+    if session and 'uid' in session:
+        user_id = session['uid']
+
+        return render_template("add_wishlist.html")
+    else:
+        return redirect('/login')
+
+@app.route('/wishlist/<wishlist_id>')
+def display_wishlist(wishlist_id):
+    bda = BookDBAccess(g.conn)
+    books = bda.get_books_from_wishlist(wishlist_id)
+    wishlist = bda.get_wishlist(wishlist_id)
+    context = dict(data=books, wishlist=wishlist)
+
+    return render_template("wishlist.html", **context)
 
 @app.route('/shoppingcart')
 def display_shoppingcart():

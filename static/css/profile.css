@@ -1,0 +1,60 @@
+.item {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+}
+
+.float-fixer {
+  clear: both;
+}
+
+.info {
+  /*border-bottom: 1px solid #eee;*/
+  padding-bottom: 9px;
+  margin-bottom: 20px;
+}
+
+.name {
+  font-weight: bold;
+  padding: 5px;
+}
+
+.follow {
+  overflow: auto;
+}
+
+.follow > div {
+  /*text-align: center;*/
+  padding: 5px;
+}
+
+.list-header {
+  background-color: #f5f5f5;
+  padding: 10px;
+}
+
+.contents {
+  padding: 40px 50px;
+}
+
+.book {
+  margin-bottom: 10px;
+}
+
+.title {
+  /*text-align: center;*/
+  margin-top: 10px;
+}
+
+.cover-img {
+  width: 200px;
+  height: 200px;
+}
+
+.wishlists .list-group {
+  margin-bottom: 0px;
+}
+
+.wishlists .list-header {
+  border: 1px solid #ddd;
+  border-bottom: none;
+}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Add wishlist{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block page %}
+    <span>Add wishlist</span>
+{% endblock %}
+{% block content %}
+    <div class="form-container">
+        <form action="/wlProcess" method="post">
+            <input type="hidden" name="method" value="add_wishlist"/>
+            <div class="row">
+                <div class="col-xs-3">
+                    <input type="text" class="form-control" name="name" placeholder="Name of the new wishlist"/>
+                </div>
+            </div>
+            <p></p>
+            <div class="row">
+                <div class="col-xs-3">
+                    <button type="button" class="btn btn-primary" onclick="this.form.submit()">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% macro list_books(list, message) %}
+{% if list | length > 0 %}
+    {% for book in list %}
+    {% if (loop.index-1) % 4 == 0 %}
+    <div class="row book-row">
+    {% endif %}
+    <div class="book col-xs-6 col-sm-3">
+        <div class="cover">
+            <a href="/book/{{book['bid']}}">
+                {% if book['cover'] %}
+                <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{book['cover']}}" />
+                {% else %}
+                <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{ url_for('static', filename='img/no-cover-image.jpg') }}" />
+                {% endif %}
+            </a>
+        </div>
+        <div class="title"><a href="/book/{{book['bid']}}">{{book['name']}}</a></div>
+    </div>
+    {% if (loop.index-1) % 4 == 3 or loop.index == (list | length) %}
+    </div>
+    {% endif %}
+    {% endfor %}
+{% else %}
+    <div>{{message}}</div>
+{% endif %}
+{% endmacro %}

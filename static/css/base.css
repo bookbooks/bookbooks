@@ -72,6 +72,10 @@ a.navbar-brand {
 .nav-sidebar > li > a:focus {
   color: #9d9d9d;
 }
+.nav-sidebar > li > a:hover,
+.nav-sidebar > li > a:focus {
+  background-color: #fff;
+}
 .nav-sidebar > .active > a,
 .nav-sidebar > .active > a:hover,
 .nav-sidebar > .active > a:focus {

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from "list_books.html" import list_books with context %}
+{% block title %}Profile{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/profile.css') }}" rel="stylesheet">
+{% endblock %}
+{% block page %}
+    <span>Your profile</span>
+{% endblock %}
+{% block content %}
+    <div class="profile-container">
+        <div class="info">
+            <div class="name">
+                {{user['firstname']}} {{user['lastname']}}
+            </div>
+            <div class="follow">
+                <div class="col-md-2"><a href="/followings/{{user['uid']}}">{{followings | length}} following</a></div>
+                <div class="col-md-2"><a href="/followers/{{user['uid']}}">{{followers | length}} followers</a></div>
+            </div>
+        </div>
+
+        <div class="float-fixer"></div>
+
+        <div class="reading-list item">
+            <div class="list-header">
+                You reading list
+            </div>
+            <div class="contents row">
+                {{list_books(reading_list, 'Currently there is no book in your reading list.')}}
+            </div>
+        </div>
+
+        <div class="float-fixer"></div>
+
+        <div class="read-list item">
+            <div class="list-header">
+                Books you have read
+            </div>
+            <div class="contents row">
+                {{list_books(reading_list, 'You have not read any books.')}}
+            </div>
+        </div>
+
+        <div class="float-fixer"></div>
+
+        <div class="wishlists">
+            <div class="list-header">
+                <span>You wishlists</span> <span><button class="btn btn-default btn-xs" type="button" onclick="location.href='/addWishlist';">Add</button></span>
+            </div>
+            <div class="">
+                {% if wishlists | length > 0 %}
+                <div class="list-group">
+                {% for wishlist in wishlists %}
+                    <div class="list-group-item"><a href="/wishlist/{{wishlist['wid']}}">{{wishlist['name']}}</a></div>
+                {% endfor %}
+                </div>
+                {% else %}
+                <div>You do not have any wishlists.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

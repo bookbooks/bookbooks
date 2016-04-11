@@ -6,7 +6,8 @@ class UserDBAccess:
         user = {}
         cursor = self.conn.execute('select u.* from users u where u.uid=%s', user_id)
         for row in cursor:
-            user = row
+            user = dict(row)
+            del user['password']
         cursor.close()
 
         return dict(user)

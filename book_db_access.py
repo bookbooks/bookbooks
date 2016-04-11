@@ -49,14 +49,23 @@ class BookDBAccess:
 
         return books
 
-    def get_wishlist(self, user_id):
+    def get_wishlists(self, user_id):
         wishlists = []
-        cursor = self.conn.execute('select wl.* from wishlists wl where wl.uid=%s', (user_id, ))
+        cursor = self.conn.execute('select wl.* from wishlists wl where wl.uid=%s order by creationdate desc', (user_id, ))
         for row in cursor:
             wishlists.append(row)
         cursor.close()
 
         return wishlists
+
+    def get_wishlist(self, wishlist_id):
+        wishlist = {}
+        cursor = self.conn.execute('select wl.* from wishlists wl where wl.wid=%s', (wishlist_id, ))
+        for row in cursor:
+            wishlist = dict(row)
+        cursor.close()
+
+        return wishlist
 
     def get_books_from_wishlist(self, wishlist_id):
         books = []
@@ -68,6 +77,9 @@ class BookDBAccess:
         cursor.close()
 
         return books
+
+    def add_wishlist(self, user_id, name):
+        self.conn.execute('insert into wishlists(name, creationdate, uid) values (%s, now(), %s)', (name, user_id))
 
     def get_book_tags(self, book_id):
         tags = []
