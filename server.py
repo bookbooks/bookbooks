@@ -152,11 +152,6 @@ def display_book(book_id):
 
     return render_template("book.html", **context)
 
-@app.route('/profile/<user_id>')
-def display_user(user_id):
-    followings = []
-    followers = []
-
 @app.route('/profile')
 def profile():
     if session and 'uid' in session:
@@ -166,7 +161,7 @@ def profile():
 
         user = uda.get_user(user_id)
         followings = uda.get_followings(user_id)
-        followers = uda.get_followers(user_id)
+        followers = uda.get_followers(user_id, True)
         reading_list = bda.get_reading_list(user_id, 'reading')
         read_list = bda.get_reading_list(user_id, 'read')
         wishlists = bda.get_wishlists(user_id)
@@ -176,6 +171,22 @@ def profile():
         return render_template("profile.html", **context)
     else:
         return redirect('/login')
+
+@app.route('/profile/<user_id>')
+def user_profile(user_id):
+    uda = UserDBAccess(g.conn)
+    bda = BookDBAccess(g.conn)
+
+    user = uda.get_user(user_id)
+    followings = uda.get_followings(user_id)
+    followers = uda.get_followers(user_id, True)
+    reading_list = bda.get_reading_list(user_id, 'reading')
+    read_list = bda.get_reading_list(user_id, 'read')
+    wishlists = bda.get_wishlists(user_id)
+
+    context = dict(user=user, followings=followings, followers=followers, reading_list=reading_list, read_list=read_list, wishlists=wishlists)
+
+    return render_template("profile.html", **context)
 
 @app.route('/wlProcess', methods=['POST'])
 def wishlist_process():
@@ -209,6 +220,43 @@ def display_wishlist(wishlist_id):
     context = dict(data=books, wishlist=wishlist)
 
     return render_template("wishlist.html", **context)
+
+@app.route('/followProcess', methods=['POST'])
+def follow_process():
+    if session and 'uid' in session:
+        user_id = session['uid']
+        method = request.form['method']
+        his_id = request.form['his_id']
+        uda = UserDBAccess(g.conn)
+
+        if method == 'follow':
+            uda.follow(user_id, his_id)
+        else:
+            uda.unfollow(user_id, his_id)
+
+        return redirect('/profile/' + his_id)
+    else:
+        return redirect('/login')
+
+@app.route('/followings/<user_id>')
+def display_followings(user_id):
+    uda = UserDBAccess(g.conn)
+    followings = uda.get_followings(user_id)
+    user = uda.get_user(user_id)
+
+    context = dict(followings=followings, user=user)
+
+    return render_template("followings.html", **context)
+
+@app.route('/followers/<user_id>')
+def display_followers(user_id):
+    uda = UserDBAccess(g.conn)
+    followers = uda.get_followers(user_id)
+    user = uda.get_user(user_id)
+
+    context = dict(followers=followers, user=user)
+
+    return render_template("followers.html", **context)
 
 @app.route('/shoppingcart')
 def display_shoppingcart():

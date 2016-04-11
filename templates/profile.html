@@ -6,13 +6,27 @@
     <link href="{{ url_for('static', filename='css/profile.css') }}" rel="stylesheet">
 {% endblock %}
 {% block page %}
-    <span>Your profile</span>
+    <span>{{user['firstname']}} {{user['lastname']}}'s profile</span>
 {% endblock %}
 {% block content %}
     <div class="profile-container">
         <div class="info">
             <div class="name">
-                {{user['firstname']}} {{user['lastname']}}
+                <span>{{user['firstname']}} {{user['lastname']}}</span>
+                {% if session['uid'] != user['uid'] %}
+                <span>
+                    <form action="/followProcess" method="post">
+                        <input type="hidden" name="his_id" value="{{user['uid']}}"/>
+                        {% if session['uid'] in followers %}
+                        <input type="hidden" name="method" value="unfollow"/>
+                        <button class="btn btn-default btn-xs" type="button" onclick="this.form.submit()">Unfollow</button>
+                        {% else %}
+                        <input type="hidden" name="method" value="follow"/>
+                        <button class="btn btn-default btn-xs" type="button" onclick="this.form.submit()">Follow</button>
+                        {% endif %}
+                    </form>
+                </span>
+                {% endif %}
             </div>
             <div class="follow">
                 <div class="col-md-2"><a href="/followings/{{user['uid']}}">{{followings | length}} following</a></div>
@@ -24,10 +38,10 @@
 
         <div class="reading-list item">
             <div class="list-header">
-                You reading list
+                {{user['firstname']}} {{user['lastname']}}'s reading list
             </div>
             <div class="contents row">
-                {{list_books(reading_list, 'Currently there is no book in your reading list.')}}
+                {{list_books(reading_list, 'Currently there is no book in ' + user['firstname'] + ' ' + user['lastname'] + ' reading list.')}}
             </div>
         </div>
 
@@ -35,10 +49,10 @@
 
         <div class="read-list item">
             <div class="list-header">
-                Books you have read
+                Books {{user['firstname']}} {{user['lastname']}} has read
             </div>
             <div class="contents row">
-                {{list_books(reading_list, 'You have not read any books.')}}
+                {{list_books(read_list, user['firstname'] + ' ' + user['lastname'] + ' has not read any books.')}}
             </div>
         </div>
 
@@ -46,7 +60,10 @@
 
         <div class="wishlists">
             <div class="list-header">
-                <span>You wishlists</span> <span><button class="btn btn-default btn-xs" type="button" onclick="location.href='/addWishlist';">Add</button></span>
+                <span>{{user['firstname']}} {{user['lastname']}}'s wishlists</span>
+                {% if session['uid'] == user['uid'] %}
+                <span><button class="btn btn-default btn-xs" type="button" onclick="location.href='/addWishlist';">Add</button></span>
+                {% endif %}
             </div>
             <div class="">
                 {% if wishlists | length > 0 %}
@@ -56,7 +73,7 @@
                 {% endfor %}
                 </div>
                 {% else %}
-                <div>You do not have any wishlists.</div>
+                <div class="contents">{{user['firstname']}} {{user['lastname']}} does not have any wishlists.</div>
                 {% endif %}
             </div>
         </div>

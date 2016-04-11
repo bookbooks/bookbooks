@@ -1,0 +1,13 @@
+{% macro list_users(list, message) %}
+{% if list | length > 0 %}
+    <div class="list-group">
+        {% for user in list %}
+            <div class="list-group-item">
+                <a href="/profile/{{user['uid']}}">{{user['firstname']}} {{user['lastname']}} ({{user['username']}})</a>
+            </div>
+        {% endfor %}
+        </div>
+{% else %}
+    <div>{{message}}</div>
+{% endif %}
+{% endmacro %}

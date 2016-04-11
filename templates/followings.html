@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% from "list_users.html" import list_users with context %}
+{% block title %}Followings{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block page %}
+    <span>The people {{user['firstname']}} {{user['lastname']}} follows</span>
+{% endblock %}
+{% block content %}
+    {{list_users(followings, user['firstname'] + ' ' + user['lastname'] + ' has not followed any users.')}}
+{% endblock %}

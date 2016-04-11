@@ -12,13 +12,16 @@ class UserDBAccess:
 
         return dict(user)
 
-    def get_followers(self, user_id):  # get the users that follow you
+    def get_followers(self, user_id, only_id=False):  # get the users that follow you
         followers = []
         cursor = self.conn.execute('select f.uid from follows f where f.followid=%s', user_id)
         for row in cursor:
             uid = row['uid']
-            user = self.get_user(uid)
-            followers.append(user)
+            if only_id:
+                followers.append(uid)
+            else:
+                user = self.get_user(uid)
+                followers.append(user)
         cursor.close()
 
         return followers
@@ -33,4 +36,16 @@ class UserDBAccess:
         cursor.close()
 
         return followings
+
+    def follow(self, your_id, his_id):
+        try:
+            self.conn.execute('insert into follows values(%s, %s)', (your_id, his_id))
+        except Exception as e:
+            print e
+
+    def unfollow(self, your_id, his_id):
+        try:
+            self.conn.execute('delete from follows where uid=%s and followid=%s', (your_id, his_id))
+        except Exception as e:
+            print e
 
