@@ -14,9 +14,10 @@ class OrderDBAccess:
             bid = row['bid']
             quantity = row['quantity']
             book = bda.get_book(bid)
-            book['quantity'] = quantity
-            books.append(book)
-            total_price += int(quantity) * float(book['price'])
+            if not book['deleted']:  # if a book has been deleted, it should be removed from the shopping cart
+                book['quantity'] = quantity
+                books.append(book)
+                total_price += int(quantity) * float(book['price'])
         cursor.close()
 
         return books, total_price

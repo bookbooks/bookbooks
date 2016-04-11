@@ -15,7 +15,7 @@ class BookDBAccess:
 
     def get_books_by_genre(self, genre_id, order='b.name'):
         books = []
-        segment = ' order by ' + order
+        segment = ' and b.deleted=false order by ' + order
         if int(genre_id) > 0:  # not all
             cursor = self.conn.execute('select b.* from books b, book_genre bg, genres g where b.bid=bg.bid and bg.gid=g.gid and g.gid=%s' + segment, (genre_id, ))
             for row in cursor:
@@ -124,7 +124,7 @@ class BookDBAccess:
 
     def search(self, keyworkd):
         books = []
-        query = sqlalchemy.text("select * from books where upper(name) like '%" + keyworkd.upper() + "%' or upper(author) like '%" + keyworkd.upper() + "%'")
+        query = sqlalchemy.text("select * from books where deleted=false and upper(name) like '%" + keyworkd.upper() + "%' or upper(author) like '%" + keyworkd.upper() + "%'")
         cursor = self.conn.execute(query)
         for row in cursor:
             books.append(row)
@@ -134,7 +134,7 @@ class BookDBAccess:
 
     def get_newest_book(self, limit):
         books = []
-        query = sqlalchemy.text("select * from books order by bid desc limit " + str(limit))
+        query = sqlalchemy.text("select * from books where deleted=false order by bid desc limit " + str(limit))
         cursor = self.conn.execute(query)
         for row in cursor:
             books.append(row)
@@ -144,7 +144,13 @@ class BookDBAccess:
 
     def get_best_sellers(self, limit):
         books = []
-        query = sqlalchemy.text("select bid, count(*) as num_sale from order_book group by bid order by num_sale desc limit " + str(limit))
+        query = sqlalchemy.text("""select ob.bid, count(ob.*) as num_sale
+        from order_book ob, books b
+        where b.deleted=false
+        and ob.bid=b.bid
+        group by ob.bid
+        order by num_sale desc
+        limit """ + str(limit))
         cursor = self.conn.execute(query)
         for row in cursor:
             bid = row['bid']

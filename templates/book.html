@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Book{% endblock %}
+{% block page %}
+    <span>{{book['name']}}</span>
+{% endblock %}
 {% block content %}
+{% if not book['deleted'] %}
     <div class="book-container">
         <div class="cover">
             <a href="/book/{{book['bid']}}">
@@ -60,4 +64,7 @@
         </div>
         {% endfor %}
     </div>
+{% else %}
+<div>The book is no longer available.</div>
+{% endif %}
 {% endblock %}
