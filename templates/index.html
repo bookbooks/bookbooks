@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "list_books.html" import list_books with context %}
 {% block title %}Books{% endblock %}
 {% block head %}
     {{ super() }}
@@ -8,4 +9,25 @@
     <span>Home</span>
 {% endblock %}
 {% block content %}
+    <div class="main-container">
+        <div class="newest-books item">
+            <div class="list-header">
+                New books
+            </div>
+            <div class="contents row">
+                {{list_books(newest_books, '')}}
+            </div>
+        </div>
+
+        <div class="best-seller item">
+            <div class="list-header">
+                Best sellers
+            </div>
+            <div class="contents row">
+                {{list_books(best_sellers, 'There is no book on sale.')}}
+            </div>
+        </div>
+
+        <div class="float-fixer"></div>
+    </div>
 {% endblock %}

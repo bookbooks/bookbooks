@@ -23,6 +23,9 @@ bda = BookDBAccess(conn)
 # print bda.get_books_in_shoppingcart(1)
 # print bda.get_genres()
 # print bda.get_genre(1)
+# print bda.search('da')
+print bda.get_newest_book(8)
+print bda.get_best_sellers(8)
 
 uda = UserDBAccess(conn)
 # print uda.get_followers(1)
@@ -33,7 +36,7 @@ oda = OrderDBAccess(conn)
 # print oda.insert_book_to_shoppingcart(9, 1, 5)
 # print oda.insert_book_to_shoppingcart(8, 1, 2)
 # print oda.remove_book_from_shoppingcart(6, 1)
-print oda.get_order(30)
+#print oda.get_order(30)
 
 # create an order
 # books = [

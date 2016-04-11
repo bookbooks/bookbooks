@@ -1,17 +1,31 @@
-<html>
-  <style>
-    body{ 
-      font-size: 15pt;
-      font-family: arial;
-    }
-  </style>
-  <body>
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block page %}
+    <span>Login</span>
+{% endblock %}
+{% block content %}
     <form action="/userLogin" method="POST">
-      <label for="username">Name:</label>
-      <input id="username" name="username" type="text">
-      <label for="password">Password:</label>
-      <input id="password" name="password" type="password">
-      <input type="submit" value="Login">
+        <input type="hidden" name="requested_url" value="{{requested_url}}"/>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="username">Name:</label>
+                <input id="username" name="username" type="text" class="form-control">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="password">Password:</label>
+                <input id="password" name="password" type="password" class="form-control">
+            </div>
+        </div>
+        <p></p>
+        <div class="row">
+            <div class="col-md-3">
+                <button type="button" class="btn btn-primary" onclick="this.form.submit()">Login</button>
+            </div>
+        </div>
     </form>
-  </body>
-</html>
+{% endblock %}

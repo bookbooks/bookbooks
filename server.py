@@ -21,6 +21,7 @@ from flask import Flask, request, render_template, g, redirect, Response, sessio
 from book_db_access import *
 from user_db_access import *
 from order_db_access import *
+import urllib
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -105,16 +106,25 @@ def teardown_request(exception):
 #
 @app.route('/')
 def index():
-  return render_template("index.html")
+    bda = BookDBAccess(g.conn)
+    newest_books = bda.get_newest_book(8)
+    best_sellers = bda.get_best_sellers(8)
+    context = dict(newest_books=newest_books, best_sellers=best_sellers)
+
+    return render_template("index.html", **context)
 
 @app.route('/login')
 def login():
-    return render_template("login.html")
+    requested_url = request.args.get('requested_url')
+    context = dict(requested_url=requested_url)
+
+    return render_template("login.html", **context)
     
 @app.route('/userLogin', methods=['POST'])
 def userLogin():
     username = request.form['username']
     password = request.form['password']
+    requested_url = request.form['requested_url']
     result = g.conn.execute("SELECT * FROM users WHERE username = %s and password = %s", (username, password))
     for row in result:
         session['uid'] = row['uid']
@@ -122,7 +132,11 @@ def userLogin():
         session['firstname'] = row['firstname']
         session['lastname'] = row['lastname']
         session['email'] = row['email']
-        return redirect('/')
+
+        if not requested_url or requested_url == 'None':
+            return redirect('/')
+        else:
+            return redirect(urllib.unquote(requested_url))
 
     return redirect('/login')
 
@@ -138,6 +152,15 @@ def list_books(genre_id):
     context = dict(data=books, genre=genre)
 
     return render_template("books.html", **context)
+
+@app.route('/search', methods=['get'])
+def search():
+    bda = BookDBAccess(g.conn)
+    keyword = request.args.get('keyword')
+    books = bda.search(keyword)
+    context = dict(data=books, keyword=keyword)
+
+    return render_template("search.html", **context)
 
 @app.route('/book/<book_id>')
 def display_book(book_id):
@@ -170,7 +193,8 @@ def profile():
 
         return render_template("profile.html", **context)
     else:
-        return redirect('/login')
+        requested_url = '?requested_url=' + urllib.quote(request.url)
+        return redirect('/login' + requested_url)
 
 @app.route('/profile/<user_id>')
 def user_profile(user_id):
@@ -210,7 +234,8 @@ def add_wishlist():
 
         return render_template("add_wishlist.html")
     else:
-        return redirect('/login')
+        requested_url = '?requested_url=' + urllib.quote(request.url)
+        return redirect('/login' + requested_url)
 
 @app.route('/wishlist/<wishlist_id>')
 def display_wishlist(wishlist_id):
@@ -269,7 +294,8 @@ def display_shoppingcart():
 
         return render_template("shoppingcart.html", **context)
     else:
-        return redirect('/login')
+        requested_url = '?requested_url=' + urllib.quote(request.url)
+        return redirect('/login' + requested_url)
 
 @app.route('/scProcess', methods=['POST'])
 def shoppingcart_process():
@@ -299,7 +325,8 @@ def order_form():
 
         return render_template("order_form.html", **context)
     else:
-        return redirect('/login')
+        requested_url = '?requested_url=' + urllib.quote(request.url)
+        return redirect('/login' + requested_url)
 
 @app.route('/orderProcess', methods=['POST'])
 def order_process():
@@ -340,7 +367,8 @@ def list_orders():
 
         return render_template("orders.html", **context)
     else:
-        return redirect('/login')
+        requested_url = '?requested_url=' + urllib.quote(request.url)
+        return redirect('/login' + requested_url)
 
 # method for rendering the sidebar
 def list_genres():

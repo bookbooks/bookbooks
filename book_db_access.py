@@ -1,3 +1,5 @@
+import sqlalchemy
+
 class BookDBAccess:
     def __init__(self, conn):
         self.conn = conn
@@ -119,3 +121,36 @@ class BookDBAccess:
         cursor.close()
 
         return dict(genre)
+
+    def search(self, keyworkd):
+        books = []
+        query = sqlalchemy.text("select * from books where upper(name) like '%" + keyworkd.upper() + "%' or upper(author) like '%" + keyworkd.upper() + "%'")
+        cursor = self.conn.execute(query)
+        for row in cursor:
+            books.append(row)
+        cursor.close()
+
+        return books
+
+    def get_newest_book(self, limit):
+        books = []
+        query = sqlalchemy.text("select * from books order by bid desc limit " + str(limit))
+        cursor = self.conn.execute(query)
+        for row in cursor:
+            books.append(row)
+        cursor.close()
+
+        return books
+
+    def get_best_sellers(self, limit):
+        books = []
+        query = sqlalchemy.text("select bid, count(*) as num_sale from order_book group by bid order by num_sale desc limit " + str(limit))
+        cursor = self.conn.execute(query)
+        for row in cursor:
+            bid = row['bid']
+            book = self.get_book(bid)
+            book['num_sale'] = row['num_sale']
+            books.append(book)
+        cursor.close()
+
+        return books

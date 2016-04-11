@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "list_books.html" import list_books with context %}
+{% block title %}Search{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/books.css') }}" rel="stylesheet">
+{% endblock %}
+{% block page %}
+    <span>Search results for keyword "{{keyword}}"</span>
+{% endblock %}
+{% block content %}
+    {{list_books(data, 'There is no result that matches the keyword.')}}
+{% endblock %}
