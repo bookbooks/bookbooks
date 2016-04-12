@@ -1,5 +1,5 @@
 {% extends "admin_base.html" %}
-{% block title %}Administrator Login{% endblock %}
+{% block title %}Add book{% endblock %}
 {% block head %}
     {{ super() }}
 {% endblock %}
@@ -31,7 +31,7 @@
     </fieldset>
     <fieldset class="form-group">
       <label for="isbn">ISBN</label>
-      <input value="{{ book.isbn }}" type="text" name="isbn" class="form-control" id="isbn" placeholder="Description">
+      <input value="{{ book.isbn }}" type="text" name="isbn" class="form-control" id="isbn" placeholder="ISBN">
     </fieldset>
     <fieldset class="form-group">
       <label for="Cover">Cover URL</label>
@@ -39,7 +39,7 @@
     </fieldset>
     <fieldset class="form-group">
       <label for="Price">Price</label>
-      <input value="{{ book.price }}" type="number" name="price" class="form-control" id="Price" placeholder="Price">
+      <input value="{{ book.price }}" type="number" step="any" min="0" name="price" class="form-control" id="Price" placeholder="Price">
     </fieldset>
     <fieldset class="form-group">
       <label for="genres">Books Genres</label>
