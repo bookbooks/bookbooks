@@ -22,7 +22,7 @@ from book_db_access import *
 from user_db_access import *
 from order_db_access import *
 import urllib
-
+import datetime
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -229,6 +229,111 @@ def userProcess():
             return redirect('/settings?method=%s&status=%s&message=%s' % (urllib.quote(method), output['status'], urllib.quote(output['message'])))
         else:
             redirect('/login')
+
+@app.route('/admin')
+def admin():
+    requested_url = request.args.get('requested_url')
+    context = dict(requested_url=requested_url)
+
+    return render_template("admin.html", **context)
+
+@app.route('/adminLogin', methods=['POST'])
+def adminLogin():
+    username = request.form['username']
+    password = request.form['password']
+    requested_url = request.form['requested_url']
+    result = g.conn.execute("SELECT * FROM admins WHERE username = %s and password = %s", (username, password))
+    for row in result:
+        session['aid'] = row['aid']
+        if not requested_url or requested_url == 'None':
+            return redirect('/booksmanagement')
+        else:
+            return redirect(urllib.unquote(requested_url))
+
+    return redirect('/admin')
+
+@app.route('/booksmanagement')
+def admin_console():
+    books = []
+    cursor = g.conn.execute('select b.* from books b where deleted = false order by b.bid')
+    for book in cursor:
+        books.append(book)
+    cursor.close()
+    navigation = [{'caption': 'Books Management', 'href': '#'}, {'caption': 'Genre Management', 'href': '/genre_management'}]
+    context = dict(navigation=navigation, books=books)
+    return render_template("booksmanagement.html", **context)
+
+@app.route('/genre_management')
+def genre_management():
+    genres = []
+    cursor = g.conn.execute('select * from genres order by gid')
+    for genre in cursor:
+        genres.append(genre)
+    cursor.close()
+    navigation = [{'caption': 'Books Management', 'href': '/booksmanagement'}, {'caption': 'Genre Management', 'href': '/genre_management'}]
+    context = dict(navigation=navigation, genres=genres)
+    return render_template("genresmanagement.html", **context)
+
+@app.route('/add_genre', methods=["POST"])
+def add_genre():
+    name = request.form['name']
+    aid = session['aid']
+    g.conn.execute('insert into genres (name, modifiedby, creationdate) values (%s, %s, %s)', (name, aid, datetime.datetime.now()))
+    return redirect("/genre_management")
+
+@app.route('/add_book')
+def add_book():
+    genres = []
+    cursor = g.conn.execute('select * from genres order by gid')
+    for genre in cursor:
+        genres.append(genre)
+    cursor.close()
+    context = dict(book={}, genres=genres)
+    return render_template("add_book.html", **context)
+
+@app.route('/add_book_submit', methods=['POST'])
+def add_book_submit():
+    name = request.form['name']
+    author = request.form['author']
+    description = request.form['description']
+    publisher = request.form['publisher']
+    publisheryear = request.form['publisheryear']
+    cover = request.form['cover']
+    price = request.form['price']
+    isbn = request.form['isbn']
+    aid = session['aid']
+    bid = request.form['bid']
+    gids = request.form.getlist('gids')
+    if not bid:
+        result = g.conn.execute('insert into books (name, author, description, publisher, publisheryear, cover, price, aid, isbn) values (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING bid', (name, author, description, publisher, publisheryear, cover, price, aid, isbn))
+        for row in result:
+            bid = row['bid']
+    else:
+        g.conn.execute('update books set name = %s, author = %s, description = %s, publisher = %s, publisheryear = %s, cover = %s, price = %s, aid = %s, isbn = %s where bid = %s', (name, author, description, publisher, publisheryear, cover, price, aid, isbn, bid))
+        g.conn.execute('delete from book_genre where bid = %s', bid)
+
+    for gid in gids:
+        g.conn.execute('insert into book_genre (bid, gid) values (%s, %s)', (bid, gid))
+
+    return redirect('/booksmanagement')
+
+@app.route('/delete_book/<bid>')
+def delete_book(bid):
+    g.conn.execute('update books set deleted = true where bid = %s', bid)
+    return 'book deleted'
+
+@app.route('/edit_book/<bid>')
+def edit_book(bid):
+    bda = BookDBAccess(g.conn)
+    book = bda.get_book(bid)
+    gids = []
+    cursor = g.conn.execute('select bg.gid from book_genre bg where bid = %s', book['bid'])
+    for row in cursor:
+        gids.append(row['gid'])
+    cursor.close()
+    genres = g.conn.execute('select * from genres order by gid')
+    context = dict(book=book, genres=genres, gids=gids)
+    return render_template('add_book.html', **context)
 
 @app.route('/books/<genre_id>')
 def list_books(genre_id):

@@ -1,0 +1,38 @@
+{% extends "admin_base.html" %}
+{% block title %}Administrator Login{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+    
+    <div>
+      <h2>Genres List</h2>
+    </div>
+    <form class="form-inline" action="/add_genre" method="POST">
+      <div class="form-group">
+        <label for="name"></label>
+        <input name="name" type="text" class="form-control" id="name" placeholder="Genre">
+      </div>
+      <button type="submit" class="btn btn-primary">Add Genre</button>
+    </form>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in genres %}
+            <tr>
+              <td>{{ item.gid }}</td>
+              <td>{{ item.name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock %}

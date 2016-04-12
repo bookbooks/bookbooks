@@ -1,0 +1,57 @@
+{% extends "admin_base.html" %}
+{% block title %}Administrator Login{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+  
+  <form action="/add_book_submit" method="POST">
+    <fieldset class="form-group">
+      <input value="{{ book.bid }}" type="hidden" name="bid" class="form-control" id="bid">
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="name">Book Name</label>
+      <input value="{{ book.name }}" type="text" name="name" class="form-control" id="name" placeholder="Enter Book Name">
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="author">Book Author</label>
+      <input value="{{ book.author }}" type="text" name="author" class="form-control" id="author" placeholder="Author">
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="publisher">Publisher</label>
+      <input value="{{ book.publisher }}" type="text" name="publisher" class="form-control" id="publisher" placeholder="Publisher">
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="publisheryear">Publish Year</label>
+      <input value="{{ book.publisheryear }}" type="number" name="publisheryear" class="form-control" id="publisheryear" placeholder="Publisher Year">
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="description">Description</label>
+      <input value="{{ book.description }}" type="textarea" name="description" class="form-control" id="description" placeholder="Description">
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="isbn">ISBN</label>
+      <input value="{{ book.isbn }}" type="text" name="isbn" class="form-control" id="isbn" placeholder="Description">
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="Cover">Cover URL</label>
+      <input value="{{ book.cover }}" type="text" name="cover" class="form-control" id="Cover" placeholder="Cover URL">
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="Price">Price</label>
+      <input value="{{ book.price }}" type="number" name="price" class="form-control" id="Price" placeholder="Price">
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="genres">Books Genres</label>
+      <select multiple name="gids" class="form-control" id="genres">
+        {% for item in genres %}
+          <option value="{{ item.gid }}" {% if item.gid in gids %}selected{% endif %}>{{ item.name }}</option>
+        {% endfor %}
+      </select>
+    </fieldset>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
+    <button type="button" class="btn btn-secondary" onclick="window.location='/booksmanagement'">Cancel</button>
+  </form>
+    
+{% endblock %}

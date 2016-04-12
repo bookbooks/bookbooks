@@ -1,0 +1,54 @@
+{% extends "admin_base.html" %}
+{% block title %}Administrator Login{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+    
+    <div>
+      <h2>Books List</h2>
+      <a href="/add_book" class="btn btn-primary btn-md" role="button">Add Book</a>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Publisher Year</th>
+            <th>ISBN</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in books %}
+            <tr>
+              <td>{{ item.bid }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.author }}</td>
+              <td>{{ item.publisheryear }}</td>
+              <td>{{ item.isbn }}</td>
+              <td><button onclick="window.location='/edit_book/{{ item.bid }}'" type="button" class="btn btn-primary btn-sm">Edit</button></td>
+              <td><button onclick="BootstrapDialog.show({
+                    title: 'Delete Confirmation',
+                    message: 'Do you want to delete the book?',
+                    buttons: [{
+                        label: 'OK',
+                        action: function(dialog) {
+                            $.ajax('/delete_book/{{ item.bid }}').done(function(){dialog.close();document.location.reload(true);});
+                        }
+                    }, {
+                        label: 'Cancel',
+                        action: function(dialog) {
+                            dialog.close();
+                        }
+                    }]
+                });" type="button" class="btn btn-primary btn-sm">Delete</button></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock %}
