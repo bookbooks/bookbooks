@@ -41,7 +41,7 @@ class OrderDBAccess:
                     if not status:
                         self.conn.execute('update shoppingcarts set status=true, quantity=%s where bid=%s and uid=%s', (quantity, book_id, user_id))
                     else:
-                        quantity = r['quantity'] + quantity
+                        quantity = r['quantity'] + int(quantity)
                         self.update_quantity_for_book_in_shoppingcart(book_id, user_id, quantity)
                 result.close()
             else:

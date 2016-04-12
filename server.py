@@ -399,6 +399,9 @@ def shoppingcart_process():
         elif method == 'updateQuantity':
             quantity = request.form['quantity']
             oda.update_quantity_for_book_in_shoppingcart(bid, user_id, quantity)
+        elif method == 'add':
+            quantity = request.form['quantity']
+            oda.insert_book_to_shoppingcart(bid, user_id, quantity)
 
         return redirect('/shoppingcart')
     else:

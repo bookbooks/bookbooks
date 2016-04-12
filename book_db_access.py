@@ -122,9 +122,9 @@ class BookDBAccess:
 
         return dict(genre)
 
-    def search(self, keyworkd):
+    def search(self, keyword):
         books = []
-        query = sqlalchemy.text("select * from books where deleted=false and upper(name) like '%" + keyworkd.upper() + "%' or upper(author) like '%" + keyworkd.upper() + "%'")
+        query = sqlalchemy.text("select * from books where deleted=false and (upper(name) like '%" + keyword.upper() + "%' or upper(author) like '%" + keyword.upper() + "%')")
         cursor = self.conn.execute(query)
         for row in cursor:
             books.append(row)
