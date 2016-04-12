@@ -3,7 +3,7 @@
     <li class="active">
         <a href="{{ endpoint }}" title="{{name}}">
             {% if awesome_font %}
-            <i class="fa {{awesome_font}} fa-lg"></i>
+            <i class="fa {{awesome_font}} fa-lg"></i> <span class="nav-item-title">{{name}}</span>
             {% else %}
             {{name}}
             {% endif %}
@@ -13,7 +13,7 @@
     <li>
         <a href="{{ endpoint }}" title="{{name}}">
             {% if awesome_font %}
-            <i class="fa {{awesome_font}} fa-lg"></i>
+            <i class="fa {{awesome_font}} fa-lg"></i> <span class="nav-item-title">{{name}}</span>
             {% else %}
             {{name}}
             {% endif %}

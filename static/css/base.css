@@ -29,6 +29,11 @@ a.navbar-brand {
   font-weight: bold;
   font-size: 24px;
 }
+@media (min-width: 768px) {
+  .nav-item-title {
+    display: none;
+  }
+}
 
 /*
  * Sidebar
