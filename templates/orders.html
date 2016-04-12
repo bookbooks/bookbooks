@@ -18,6 +18,7 @@
             <div class="shoppingcart-header">
                 <div><b>Order reference number</b>: {{order['oid']}}</div>
                 <div><b>Ordered on</b> {{order['orderdate']}}</div>
+                <div><b>Shipping to</b>: {{order['address']}}</div>
             </div>
             {% for book in order['books'] %}
             <div class="book-row">

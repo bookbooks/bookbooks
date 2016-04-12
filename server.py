@@ -438,7 +438,7 @@ def order_process():
         state = request.form['state']
         country = request.form['country']
 
-        address = address + ', Apt ' + apt + '\n'+ city + ', ' + state + ' ' + postcode + '\n' + country
+        address = address + ', Apt ' + apt + ',\n'+ city + ', ' + state + ' ' + postcode + ',\n' + country.upper()
 
         oda.create_order(user_id, address, mobile, firstname, lastname, books)
 

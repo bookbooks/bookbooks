@@ -42,13 +42,13 @@
                 <label>Name</label>
                 <div class="three fields">
                     <div class="field">
-                        <input name="firstname" placeholder="First Name" type="text">
+                        <input name="firstname" placeholder="First Name" type="text" required>
                     </div>
                     <div class="field">
-                        <input name="lastname" placeholder="Last Name" type="text">
+                        <input name="lastname" placeholder="Last Name" type="text" required>
                     </div>
                     <div class="field">
-                        <input name="mobile" placeholder="Mobile" type="text">
+                        <input name="mobile" placeholder="Mobile" type="text" required>
                     </div>
                 </div>
             </div>
@@ -56,7 +56,7 @@
                 <label>Billing Address</label>
                 <div class="fields">
                     <div class="twelve wide field">
-                        <input name="address" placeholder="Street Address" type="text">
+                        <input name="address" placeholder="Street Address" type="text" required>
                     </div>
                     <div class="four wide field">
                         <input name="apt" placeholder="Apt #" type="text">
@@ -428,7 +428,7 @@
                 </div>
             </div>
 
-            <button type="button" class="btn btn-primary" onclick="this.form.submit()">Submit order</button>
+            <button type="submit" class="btn btn-primary">Submit order</button>
         </form>
     </div>
     {% else %}
