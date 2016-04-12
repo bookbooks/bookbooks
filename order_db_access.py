@@ -19,7 +19,7 @@ class OrderDBAccess:
                 books.append(book)
                 total_price += int(quantity) * float(book['price'])
             else:  # if a book has been deleted, it should be removed from the shopping cart
-                if book['status']:
+                if book['deleted']:
                     self.remove_book_from_shoppingcart(bid, user_id)
         cursor.close()
 

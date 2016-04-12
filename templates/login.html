@@ -7,24 +7,35 @@
     <span>Login</span>
 {% endblock %}
 {% block content %}
+    {% if message %}
+    <div class="alert alert-success">
+        <strong>Registration is done!</strong> Now you can log in with your credential.
+    </div>
+    {% endif %}
+    {% if error %}
+    <div class="alert alert-danger">
+        The username and password do not match!
+    </div>
+    {% endif %}
     <form action="/userLogin" method="POST">
         <input type="hidden" name="requested_url" value="{{requested_url}}"/>
         <div class="row">
             <div class="col-md-3">
-                <label for="username">Name:</label>
-                <input id="username" name="username" type="text" class="form-control">
+                <label for="username">Username:</label>
+                <input id="username" name="username" type="text" class="form-control" required>
             </div>
         </div>
         <div class="row">
             <div class="col-md-3">
                 <label for="password">Password:</label>
-                <input id="password" name="password" type="password" class="form-control">
+                <input id="password" name="password" type="password" class="form-control" required>
             </div>
         </div>
         <p></p>
         <div class="row">
             <div class="col-md-3">
-                <button type="button" class="btn btn-primary" onclick="this.form.submit()">Login</button>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="button" class="btn btn-danger" onclick="location.href='/register';">Register</button>
             </div>
         </div>
     </form>

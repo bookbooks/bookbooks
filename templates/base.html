@@ -49,6 +49,7 @@
                     </ul>
                     {% else %}
                     <ul class="nav navbar-nav navbar-right">
+                        {{ nav_link('/register', 'Sign up', 'fa-user-plus') }}
                         {{ nav_link('/login', 'Login', 'fa-sign-in') }}
                     </ul>
                     {% endif %}

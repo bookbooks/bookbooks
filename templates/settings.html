@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}User settings{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block page %}
+    <span>User settings</span>
+{% endblock %}
+{% block content %}
+    <div class="change-pwd-container">
+        <div class="panel panel-default">
+            <div class="panel-heading">Change password</div>
+            <div class="panel-body">
+                {% if output['method'] == 'changePassword' %}
+                    {% if output['status'] == 'True' %}
+                    <div class="alert alert-success">
+                        {{output['message']}}
+                    </div>
+                    {% elif output['status'] == 'False' %}
+                    <div class="alert alert-danger">
+                        {{output['message']}}
+                    </div>
+                    {% endif %}
+                {% endif %}
+                <form action="/userProcess" method="POST">
+                    <input type="hidden" name="method" value="changePassword" />
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="old_password">Old password:</label>
+                            <input id="old_password" name="old_password" type="password" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="new_password">New password:</label>
+                            <input id="new_password" name="new_password" type="password" class="form-control" required>
+                        </div>
+                    </div>
+                    <p></p>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" class="btn btn-default">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="update-profile-container">
+        <div class="panel panel-default">
+            <div class="panel-heading">Update profile</div>
+            <div class="panel-body">
+                {% if output['method'] == 'updateProfile' %}
+                    {% if output['status'] == 'True' %}
+                    <div class="alert alert-success">
+                        {{output['message']}}
+                    </div>
+                    {% elif output['status'] == 'False' %}
+                    <div class="alert alert-danger">
+                        {{output['message']}}
+                    </div>
+                    {% endif %}
+                {% endif %}
+                <form action="/userProcess" method="POST">
+                    <input type="hidden" name="method" value="updateProfile" />
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="firstname">Firstname:</label>
+                            <input id="firstname" name="firstname" type="text" class="form-control" value="{{output['user']['firstname']}}" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="lastname">Lastname:</label>
+                            <input id="lastname" name="lastname" type="text" class="form-control" value="{{output['user']['lastname']}}" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="email">Email:</label>
+                            <input id="email" name="email" type="email" class="form-control" value="{{output['user']['email']}}" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="address">Address:</label>
+                            <input id="address" name="address" type="text" class="form-control" value="{{output['user']['address']}}">
+                        </div>
+                    </div>
+                    <p></p>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" class="btn btn-default">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

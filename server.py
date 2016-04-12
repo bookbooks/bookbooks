@@ -116,10 +116,22 @@ def index():
 @app.route('/login')
 def login():
     requested_url = request.args.get('requested_url')
-    context = dict(requested_url=requested_url)
+    message = request.args.get('message')
+    error = request.args.get('error')
+    context = dict(requested_url=requested_url, message=message, error=error)
 
     return render_template("login.html", **context)
-    
+
+@app.route('/logout')
+def logout():
+    session.pop('uid', None)
+    session.pop('username', None)
+    session.pop('firstname', None)
+    session.pop('lastname', None)
+    session.pop('email', None)
+
+    return redirect('/')
+
 @app.route('/userLogin', methods=['POST'])
 def userLogin():
     username = request.form['username']
@@ -138,7 +150,85 @@ def userLogin():
         else:
             return redirect(urllib.unquote(requested_url))
 
-    return redirect('/login')
+    return redirect('/login?error=true')
+
+@app.route('/register')
+def register():
+    refill = {}
+    if request.args.get('message'):
+        refill['error_message'] = urllib.unquote(request.args.get('message'))
+    if request.args.get('username'):
+        refill['username'] = urllib.unquote(request.args.get('username'))
+    if request.args.get('firstname'):
+        refill['firstname'] = urllib.unquote(request.args.get('firstname'))
+    if request.args.get('lastname'):
+        refill['lastname'] = urllib.unquote(request.args.get('lastname'))
+    if request.args.get('email'):
+        refill['email'] = urllib.unquote(request.args.get('email'))
+    context = dict(refill=refill)
+
+    return render_template("register.html", **context)
+
+@app.route('/settings')
+def settings():
+    if session and 'uid' in session:
+        user_id = session['uid']
+        output = {}
+        if request.args.get('message'):
+            output['message'] = urllib.unquote(request.args.get('message'))
+        if request.args.get('status'):
+            output['status'] = request.args.get('status')
+        if request.args.get('method'):
+            output['method'] = urllib.unquote(request.args.get('method'))
+
+        uda = UserDBAccess(g.conn)
+        user = uda.get_user(user_id)
+        output['user'] = user
+
+        context = dict(output=output)
+        return render_template("settings.html", **context)
+    else:
+        requested_url = '?requested_url=' + urllib.quote(request.url)
+        return redirect('/login' + requested_url)
+
+
+@app.route('/userProcess', methods=['POST'])
+def userProcess():
+    method = request.form['method']
+
+    uda = UserDBAccess(g.conn)
+    if method == 'reg':
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        firstname = request.form['firstname']
+        lastname = request.form['lastname']
+        output = uda.register(username, password, firstname, lastname, email)
+
+        if output['status']:
+            return redirect('/login?message=' + urllib.quote(output['message']))
+        else:
+            return redirect('/register?message=%s&username=%s&firstname=%s&lastname=%s&email=%s' % (urllib.quote(output['message']), urllib.quote(username), urllib.quote(firstname), urllib.quote(lastname), urllib.quote(email)))
+    elif method == 'changePassword':
+        if session and 'uid' in session:
+            user_id = session['uid']
+            old_password = request.form['old_password']
+            new_password = request.form['new_password']
+            output = uda.change_password(user_id, old_password, new_password)
+            return redirect('/settings?method=%s&status=%s&message=%s' % (urllib.quote(method), output['status'], urllib.quote(output['message'])))
+        else:
+            redirect('/login')
+    else:
+        if session and 'uid' in session:
+            user_id = session['uid']
+            address = request.form['address']
+            email = request.form['email']
+            firstname = request.form['firstname']
+            lastname = request.form['lastname']
+            output = uda.update_profile(user_id, firstname, lastname, email, address)
+            return redirect('/settings?method=%s&status=%s&message=%s' % (urllib.quote(method), output['status'], urllib.quote(output['message'])))
+        else:
+            redirect('/login')
 
 @app.route('/books/<genre_id>')
 def list_books(genre_id):
