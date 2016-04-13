@@ -41,10 +41,28 @@
         </div>
     </div>
 
-    <div>[should list all tags and the tag should be clickable] [add to reading list & rating & select tag]</div>
-
-    <div>[add to wishlist]</div>
-
+    <div style="margin-top: 10px;margin-bottom: 20px">
+        <button id="reading-btn" type="button" class="btn btn-primary btn-xs">Reading</button>
+        <button id="read-btn" type="button" class="btn btn-primary btn-xs">Read</button>
+    </div>
+    <div style="margin-bottom: 20px">
+        <div>Your Rating: {{ readingstatus['rating']}}</div>
+        <div>Your Status: {{ readingstatus['currentstatus']}}</div>
+    </div>
+    
+    {% if wishlists|length > 0 %}
+        <div style="margin-bottom: 20px">
+            <form action="/add_to_wishlist" method="post">
+                <input type="hidden" name="bid" value="{{ book['bid'] }}"/>
+                <select name="wid">
+                    {% for w in wishlists %}
+                        <option value="{{ w.wid }}">{{ w.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary btn-xs">Add to Wishlist</button>
+            </form>
+        </div>
+    {% endif %}
     <div>
         <form action="/scProcess" method="post">
             <input type="hidden" name="method" value="add">
@@ -63,11 +81,11 @@
     </div>
 
     <div class="review-container">
+        <h1>Review</h1>
         {% for review in reviews %}
-        <div class="review">
+        <div class="review" style="margin: 20px;border: 1px solid gray;padding: 5px;border-radius: 5px">
             <div class="user">
-                <div class="firstname">{{review['firstname']}}</div>
-                <div class="lastname">{{review['lastname']}}</div>
+                <div><span style="margin-right: 10px">{{review['firstname']}}</span><span>{{review['lastname']}}</span></div>
                 <div class="username">{{review['username']}}</div>
             </div>
             <div class="review-date">
@@ -79,6 +97,7 @@
         </div>
         {% endfor %}
     </div>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/rating_book.js') }}"></script>
 {% else %}
 <div>The book is no longer available.</div>
 {% endif %}

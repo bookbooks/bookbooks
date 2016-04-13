@@ -1,0 +1,30 @@
+<div id="tag_container" style="margin-bottom: 5px">
+<label>Tags</label>
+<select id="tags" multiple data-role="tagsinput">
+  {% for tag in tags %}
+    <option value="{{ tag['name'] }}">{{ tag['name'] }}</option>
+  {% endfor %}
+</select>
+</div>
+<form id="review-form">
+  <input name="status" class="form-control" type="hidden" id="status" value="{{ rating['status'] }}" />
+  <input name="bid" class="form-control" type="hidden" id="bid" value="{{ rating['bid'] }}" />
+  <fieldset class="form-group">
+    <label for="rating">Rating</label>
+    <select name="rating" class="form-control" id="rating">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+  </fieldset>
+  <fieldset class="form-group">
+    <label for="review">Review</label>
+    <textarea name="review" class="form-control" id="review" rows="10"></textarea>
+  </fieldset>
+  <button id="save-review" type="submit" class="btn btn-primary">Save</button>
+</form>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-tagsinput.css') }}">
+<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-tagsinput.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/review_dialog.js') }}"></script>

@@ -366,9 +366,81 @@ def display_book(book_id):
     book = bda.get_book(book_id)
     reviews = bda.get_review_by_book_id(book_id)
 
-    context = dict(book=book, reviews=reviews)
+    wishlists = []
+    if 'uid' in session:
+        cursor = g.conn.execute('select * from wishlists where uid = %s', session['uid'])
+        for w in cursor:
+            wishlists.append(w)
+        cursor.close()
+        curosr = g.conn.execute('select * from readingstatus where uid = %s and bid = %s', (session['uid'], book_id))
+        readingstatus = {}
+        for rs in curosr:
+            readingstatus['currentstatus'] = rs['currentstatus']
+            readingstatus['rating'] = rs['rating']
+
+    context = dict(book=book, reviews=reviews, wishlists=wishlists, readingstatus=readingstatus)
 
     return render_template("book.html", **context)
+
+@app.route('/add_to_wishlist', methods=["POST"])
+def add_to_wishlist():
+    wid = request.form['wid']
+    bid = request.form['bid']
+    curosr = g.conn.execute('select * from wishlist_book where bid = %s and wid = %s', (bid, wid))
+    for wish in curosr:
+        return redirect('/book/' + str(bid))
+    g.conn.execute('insert into wishlist_book (wid, bid) values (%s, %s)', (wid, bid))
+    return redirect('/book/' + str(bid))
+
+@app.route('/reading_rating/<bid>')
+def reading_rating(bid):
+    rating = {'bid':bid, 'status': 'reading'}
+    tags = get_book_tags(bid)
+    context = dict(rating=rating, tags=tags)
+    return render_template('rating.html', **context)
+
+@app.route('/read_rating/<bid>')
+def read_rating(bid):
+    rating = {'bid':bid, 'status': 'read'}
+    tags = get_book_tags(bid)
+    context = dict(rating=rating, tags=tags)
+    return render_template('rating.html', **context)
+
+def get_book_tags(bid):
+    tags = []
+    curosr = g.conn.execute('select distinct t.name from user_tag_book utb, tags t where utb.tid = t.tid and utb.bid = %s', bid)
+    for tag in curosr:
+        tags.append(tag)
+    curosr.close()
+    return tags
+
+@app.route('/submit_review', methods=["POST"])
+def submit_review():
+    json = request.get_json()
+    status = json['status']
+    rating = json['rating']
+    bid = json['bid']
+    review = json['review']
+    tags = json['tags']
+    uid = session['uid']
+    g.conn.execute('delete from readingstatus rs where rs.bid = %s and rs.uid = %s', (bid, uid))
+    g.conn.execute('insert into readingstatus (bid, uid, currentstatus, rating) values (%s, %s, %s, %s)', (bid, uid, status, rating))
+    tids = []
+    for tag in tags:
+        curosr = g.conn.execute('select * from tags where name = %s', tag)
+        rows = curosr.fetchall()
+        if len(rows) > 0:
+            tids.append(rows[0]['tid'])
+            continue
+        res = g.conn.execute('insert into tags (name) values (%s) returning tid', tag)
+        for row in res:
+            tids.append(row['tid'])
+    g.conn.execute('delete from user_tag_book utb where utb.bid = %s and utb.uid = %s', (bid, uid))
+    for tid in tids:
+        g.conn.execute('insert into user_tag_book (uid, bid, tid) values (%s, %s, %s)', (uid, bid, tid))
+    g.conn.execute('insert into reviews (uid, bid, reviewdate, contents) values (%s, %s, %s, %s)', (uid, bid, datetime.datetime.now(), review))
+    return "success"
+
 
 @app.route('/profile')
 def profile():
