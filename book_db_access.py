@@ -38,7 +38,7 @@ class BookDBAccess:
 
     def get_review_by_book_id(self, book_id):
         reviews = []
-        cursor = self.conn.execute('select u.*, r.contents, r.reviewdate from books b, users u, reviews r where b.bid=r.bid and u.uid=r.uid and b.bid=%s', book_id)
+        cursor = self.conn.execute('select u.*, r.contents, r.reviewdate from books b, users u, reviews r where b.bid=r.bid and u.uid=r.uid and b.bid=%s order by reviewdate desc', book_id)
         for row in cursor:
             reviews.append(row)
         cursor.close()

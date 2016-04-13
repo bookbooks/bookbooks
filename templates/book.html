@@ -92,11 +92,19 @@
                 {% if session and 'uid' in session %}
                 <div>
                     <!--<div>Your Rating: {{ readingstatus['rating']}}</div>-->
-                    <div>Your Status: {{ readingstatus['currentstatus']}}</div>
+                    <div>Read status:</div>
                 </div>
                 <div>
+                    {% if readingstatus['currentstatus'] == 'reading' %}
                     <button id="reading-btn" type="button" class="btn btn-primary btn-xs">Reading</button>
+                    <button id="read-btn" type="button" class="btn btn-default btn-xs">Read</button>
+                    {% elif readingstatus['currentstatus'] == 'read' %}
+                    <button id="reading-btn" type="button" class="btn btn-default btn-xs">Reading</button>
                     <button id="read-btn" type="button" class="btn btn-primary btn-xs">Read</button>
+                    {% else %}
+                    <button id="reading-btn" type="button" class="btn btn-default btn-xs">Reading</button>
+                    <button id="read-btn" type="button" class="btn btn-default btn-xs">Read</button>
+                    {% endif %}
                 </div>
                 {% endif %}
                 <p></p>
