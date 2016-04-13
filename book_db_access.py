@@ -94,14 +94,16 @@ class BookDBAccess:
 
     def get_books_by_tag_id(self, tag_id):
         books = []
-        cursor = self.conn.execute('select distinct(utb.bid) from user_tag_book utb where utb.tid=%s', (tag_id, ))
+        tag = ''
+        cursor = self.conn.execute('select distinct(utb.bid), t.name from user_tag_book utb, tags t where utb.tid=t.tid and utb.tid=%s', (tag_id, ))
         for row in cursor:
             bid = row['bid']
+            tag = row['name']
             book = self.get_book(bid)
             books.append(book)
         cursor.close()
 
-        return books
+        return books, tag
 
     def get_genres(self):
         genres = []

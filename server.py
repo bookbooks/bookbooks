@@ -357,6 +357,14 @@ def search():
 
     return render_template("search.html", **context)
 
+@app.route('/tag/<tag_id>')
+def tag(tag_id):
+    bda = BookDBAccess(g.conn)
+    books, tag = bda.get_books_by_tag_id(tag_id)
+    context = dict(data=books, tag=tag)
+
+    return render_template("tag.html", **context)
+
 @app.route('/book/<book_id>')
 def display_book(book_id):
     book = {}
@@ -365,20 +373,21 @@ def display_book(book_id):
     bda = BookDBAccess(g.conn)
     book = bda.get_book(book_id)
     reviews = bda.get_review_by_book_id(book_id)
+    tags = bda.get_book_tags(book_id)
 
     wishlists = []
+    readingstatus = {}
     if 'uid' in session:
         cursor = g.conn.execute('select * from wishlists where uid = %s', session['uid'])
         for w in cursor:
             wishlists.append(w)
         cursor.close()
         curosr = g.conn.execute('select * from readingstatus where uid = %s and bid = %s', (session['uid'], book_id))
-        readingstatus = {}
         for rs in curosr:
             readingstatus['currentstatus'] = rs['currentstatus']
             readingstatus['rating'] = rs['rating']
 
-    context = dict(book=book, reviews=reviews, wishlists=wishlists, readingstatus=readingstatus)
+    context = dict(book=book, reviews=reviews, wishlists=wishlists, readingstatus=readingstatus, tags=tags)
 
     return render_template("book.html", **context)
 

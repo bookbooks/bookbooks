@@ -1,0 +1,12 @@
+.tags {
+  font-size: 14px;
+}
+
+.tags span {
+  margin-right: 5px;
+}
+
+.tags span a, .tags span a:hover {
+  color: white;
+  text-decoration: none
+}

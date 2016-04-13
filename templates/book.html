@@ -1,83 +1,102 @@
 {% extends "base.html" %}
 {% block title %}Book{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/book.css') }}" rel="stylesheet">
+{% endblock %}
 {% block page %}
-    <span>{{book['name']}}</span>
+    <span>Book details</span>
 {% endblock %}
 {% block content %}
 {% if not book['deleted'] %}
     <div class="book-container">
-        <div class="cover">
-            <a href="/book/{{book['bid']}}">
-                {% if book['cover'] %}
-                <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{book['cover']}}" />
-                {% else %}
-                <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{ url_for('static', filename='img/no-cover-image.jpg') }}" />
-                {% endif %}
-            </a>
-        </div>
-        <div class="name">
-            {{book['name']}}
-        </div>
-        <div class="author">
-            {{book['author']}}
-        </div>
-        <div class="publisher">
-            {{book['publisher']}}
-        </div>
-        <div class="published-year">
-            {{book['publisheryear']}}
-        </div>
-        <div class="isbn">
-            {{book['isbn']}}
-        </div>
-        <div class="description">
-            {{book['description']}}
-        </div>
-        <div class="price">
-            {{book['price']}}
-        </div>
-        <div class="genre">
-            {{book['genre_name']}}
-        </div>
-    </div>
-
-    <div style="margin-top: 10px;margin-bottom: 20px">
-        <button id="reading-btn" type="button" class="btn btn-primary btn-xs">Reading</button>
-        <button id="read-btn" type="button" class="btn btn-primary btn-xs">Read</button>
-    </div>
-    <div style="margin-bottom: 20px">
-        <div>Your Rating: {{ readingstatus['rating']}}</div>
-        <div>Your Status: {{ readingstatus['currentstatus']}}</div>
-    </div>
-    
-    {% if wishlists|length > 0 %}
-        <div style="margin-bottom: 20px">
-            <form action="/add_to_wishlist" method="post">
-                <input type="hidden" name="bid" value="{{ book['bid'] }}"/>
-                <select name="wid">
-                    {% for w in wishlists %}
-                        <option value="{{ w.wid }}">{{ w.name }}</option>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="cover">
+                    <a href="/book/{{book['bid']}}">
+                        {% if book['cover'] %}
+                        <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{book['cover']}}" />
+                        {% else %}
+                        <img class="img-responsive cover-img" alt="{{book['name']}}" src="{{ url_for('static', filename='img/no-cover-image.jpg') }}" />
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="name lead">
+                    {{book['name']}}
+                </div>
+                {% if tags|length > 0 %}
+                <div class="lead tags bootstrap-tagsinput">
+                    {% for tag in tags %}
+                    <span class="tag label label-info">
+                        <a href="/tag/{{tag['tid']}}">{{tag['name']}}</a>
+                    </span>
                     {% endfor %}
-                </select>
-                <button type="submit" class="btn btn-primary btn-xs">Add to Wishlist</button>
-            </form>
-        </div>
-    {% endif %}
-    <div>
-        <form action="/scProcess" method="post">
-            <input type="hidden" name="method" value="add">
-            <input type="hidden" name="bid" value="{{book['bid']}}"/>
-            <select name="quantity">
-                {% for n in range(1, 100) %}
-                {% if n == book['quantity'] %}
-                <option selected value="{{n}}">{{n}}</option>
-                {% else %}
-                <option value="{{n}}">{{n}}</option>
+                </div>
                 {% endif %}
-                {% endfor %}
-            </select>
-            <button type="button" class="btn btn-primary btn-xs" onclick="this.form.submit()">Add to cart</button>
-        </form>
+                <div class="author">
+                    <b>Author(s)</b>: {{book['author']}}
+                </div>
+                <div class="publisher">
+                    <b>Publisher</b>: {{book['publisher']}}
+                </div>
+                <div class="published-year">
+                    <b>Published year</b>: {{book['publisheryear']}}
+                </div>
+                <div class="isbn">
+                    <b>ISBN</b>: {{book['isbn']}}
+                </div>
+                <div class="price">
+                    <b>Price</b>: {{book['price']}}
+                    <div>
+                        <form action="/scProcess" method="post">
+                            <input type="hidden" name="method" value="add">
+                            <input type="hidden" name="bid" value="{{book['bid']}}"/>
+                            <select name="quantity">
+                                {% for n in range(1, 100) %}
+                                {% if n == book['quantity'] %}
+                                <option selected value="{{n}}">{{n}}</option>
+                                {% else %}
+                                <option value="{{n}}">{{n}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                            <button type="button" class="btn btn-primary btn-xs" onclick="this.form.submit()">Add to cart</button>
+                        </form>
+                    </div>
+                </div>
+                <p></p>
+                {% if wishlists|length > 0 %}
+                    <div>
+                        <form action="/add_to_wishlist" method="post">
+                            <input type="hidden" name="bid" value="{{ book['bid'] }}"/>
+                            <select name="wid">
+                                {% for w in wishlists %}
+                                    <option value="{{ w.wid }}">{{ w.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-xs">Add to Wishlist</button>
+                        </form>
+                    </div>
+                {% endif %}
+                <p></p>
+                {% if session and 'uid' in session %}
+                <div>
+                    <div>Your Rating: {{ readingstatus['rating']}}</div>
+                    <div>Your Status: {{ readingstatus['currentstatus']}}</div>
+                </div>
+                <div>
+                    <button id="reading-btn" type="button" class="btn btn-primary btn-xs">Reading</button>
+                    <button id="read-btn" type="button" class="btn btn-primary btn-xs">Read</button>
+                </div>
+                {% endif %}
+                <p></p>
+                <div class="description">
+                    <p>{{book['description']}}</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="review-container">
@@ -85,8 +104,8 @@
         {% for review in reviews %}
         <div class="review" style="margin: 20px;border: 1px solid gray;padding: 5px;border-radius: 5px">
             <div class="user">
-                <div><span style="margin-right: 10px">{{review['firstname']}}</span><span>{{review['lastname']}}</span></div>
-                <div class="username">{{review['username']}}</div>
+                <div><span style="margin-right: 5px">{{review['firstname']}}</span><span>{{review['lastname']}}</span></div>
+                <div class="username"><a href="/profile/{{review['uid']}}">{{review['username']}}</a></div>
             </div>
             <div class="review-date">
                 {{review['reviewdate']}}

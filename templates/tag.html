@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "list_books.html" import list_books with context %}
+{% block title %}Books under tag: "{{tag}}"{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/books.css') }}" rel="stylesheet">
+{% endblock %}
+{% block page %}
+    <span>Books under tag: "{{tag}}"</span>
+{% endblock %}
+{% block content %}
+    {{list_books(data, 'There is no book under this tag.')}}
+{% endblock %}
