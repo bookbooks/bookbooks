@@ -91,7 +91,8 @@
                 <p></p>
                 {% if session and 'uid' in session %}
                 <div>
-                    <div>Your Rating: {{ readingstatus['rating']}}</div>
+                    <!--<div>Your Rating: {{ readingstatus['rating']}}</div>-->
+                    <div>Your Status: {{ readingstatus['currentstatus']}}</div>
                 </div>
                 <div>
                     <button id="reading-btn" type="button" class="btn btn-primary btn-xs">Reading</button>
