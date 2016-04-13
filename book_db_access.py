@@ -4,14 +4,21 @@ class BookDBAccess:
     def __init__(self, conn):
         self.conn = conn
 
-    def get_book(self, book_id):
+    def get_book(self, book_id, get_rating=False):
         book = {}
         cursor = self.conn.execute('select b.*, g.name as genre_name from books b, book_genre bg, genres g where b.bid=bg.bid and bg.gid=g.gid and b.bid=%s', (book_id,))
         for row in cursor:
-            book = row
+            book = dict(row)
         cursor.close()
 
-        return dict(book)
+        if get_rating:
+            cursor = self.conn.execute('select avg(rating) as avg_rating from readingstatus where bid=%s', book_id)
+            for row in cursor:
+                if row['avg_rating']:
+                    book['rating'] = round(row['avg_rating'], 2)
+            cursor.close()
+
+        return book
 
     def get_books_by_genre(self, genre_id, order='b.name'):
         books = []

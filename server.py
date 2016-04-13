@@ -371,7 +371,7 @@ def display_book(book_id):
     reviews = []
 
     bda = BookDBAccess(g.conn)
-    book = bda.get_book(book_id)
+    book = bda.get_book(book_id, True)
     reviews = bda.get_review_by_book_id(book_id)
     tags = bda.get_book_tags(book_id)
 

@@ -47,6 +47,14 @@
                 <div class="isbn">
                     <b>ISBN</b>: {{book['isbn']}}
                 </div>
+                <div class="rating">
+                    <b>Rating</b>:
+                    {% if book['rating'] %}
+                    {{book['rating']}}/5
+                    {% else %}
+                    N/A
+                    {% endif %}
+                </div>
                 <div class="price">
                     <b>Price</b>: {{book['price']}}
                     <div>
@@ -84,7 +92,6 @@
                 {% if session and 'uid' in session %}
                 <div>
                     <div>Your Rating: {{ readingstatus['rating']}}</div>
-                    <div>Your Status: {{ readingstatus['currentstatus']}}</div>
                 </div>
                 <div>
                     <button id="reading-btn" type="button" class="btn btn-primary btn-xs">Reading</button>
